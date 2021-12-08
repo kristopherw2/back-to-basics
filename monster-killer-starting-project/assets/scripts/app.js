@@ -12,14 +12,31 @@ const LOG_EVENT_MONSTER_ATTACK = "MONSTER_ATTACK";
 const LOG_EVENT_PLAYER_HEAL = "PLAYER_HEAL";
 const LOG_EVENT_GAME_OVER = "GAME_OVER";
 
-const enteredValue = prompt("Maximum life for you and the monster.", "100");
+function getMaxLifeValues() {
+    const enteredValue = prompt("Maximum life for you and the monster.", "100");
 
-let chosenMaxLife = parseInt(enteredValue);
-let battleLog = [];
-
-if (isNaN(chosenMaxLife) || chosenMaxLife <= 0) {
-    chosenMaxLife = 100;
+    const parsedValue = parseInt(enteredValue);
+    if (isNaN(parsedValue) || parsedValue <= 0) {
+      throw {message: 'Invalid user input not a number!'}
+    }
+    return parsedValue;
 }
+
+let chosenMaxLife;
+
+try {
+  let chosenMaxLife = getMaxLifeValues();
+} catch(error) {
+  console.log(error)
+  chosenMaxLife = 100;
+  alert('You used something wrong default value of 100 used for health.')
+  //throw error;
+}
+
+
+
+let battleLog = [];
+let lastLoggedEntry;
 
 let currentMonsterHealth = chosenMaxLife;
 let currentPlayerHealth = chosenMaxLife;
@@ -230,25 +247,36 @@ function printLogHandler() {
         console.log("----");
     }
 
-    let j = 3;
-    while (j < 3) {
-        console.log(j);
+    let j = 0;
+    outerWhile: do {
+        console.log("Outer", j);
+        innerFor: for (let k = 0; k < 5; k++) {
+            if (k === 3) {
+                break outerWhile;
+            }
+            console.log("inner", k);
+        }
         j++;
-    }
+    } while (j < 3);
 
     // for(let i = 0; i < battleLog.length; i++){
     //   console.log(battleLog[i])
     // }
     let i = 0;
     for (const logEntry of battleLog) {
-        console.log(`#${i}`);
-        i++;
-        for (const key in logEntry) {
-            console.log(`${key} => ${logEntry[key]}`);
+        if (
+            (!lastLoggedEntry && lastLoggedEntry !== 0) ||
+            lastLoggedEntry < i
+        ) {
+            console.log(`#${i}`);
+            for (const key in logEntry) {
+                console.log(`${key} => ${logEntry[key]}`);
+            }
+            lastLoggedEntry = i;
+            break;
         }
+        i++;
     }
-
-    console.log(battleLog);
 }
 
 attackBtn.addEventListener("click", attackHandler);
