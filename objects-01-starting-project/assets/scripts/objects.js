@@ -29,7 +29,7 @@ const renderMovies = (filter = "") => {
 		let text = getFormattedTitle.call(movie) + " - ";
 
 		for (const key in info) {
-			if (key !== "title") {
+			if (key !== "title" && key !== '_title') {
 				text = text + `${key}: ${info[key]}`;
 			}
 		}
@@ -42,32 +42,41 @@ const addMovieHandler = () => {
 	const title = document.getElementById("title").value;
 	const extraName = document.getElementById("extra-name").value;
 	const extraValue = document.getElementById("extra-value").value;
-	if (
-		title.trim() === "" ||
-		extraName.trim() === "" ||
-		extraValue.trim() === ""
-	) {
+
+	if (extraName.trim() === "" || extraValue.trim() === "") {
 		return;
 	}
 
 	const newMovie = {
 		info: {
-			title,
+			set title(value) {
+				if (value.trim() === "") {
+					this._title = "DEFAULT";
+					return;
+				}
+				this._title = value;
+			},
+			get title() {
+				return this._title;
+			},
 			[extraName]: extraValue,
 		},
 		id: Math.random().toString(),
 		getFormattedTitle() {
-      console.log(this)
+			console.log(this);
 			return this.info.title.toUpperCase();
 		},
 	};
+
+	newMovie.info.title = title;
+	console.log(newMovie.info.title)
 
 	movies.push(newMovie);
 	renderMovies();
 };
 
 const searchMovieHandler = () => {
-  console.log(this)
+	console.log(this);
 	const filterTerm = document.getElementById("filter-title").value;
 	renderMovies(filterTerm);
 };
